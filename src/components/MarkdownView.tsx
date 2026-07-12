@@ -110,137 +110,241 @@ export default function MarkdownView({ profile }: MarkdownViewProps) {
 
   // Create an animated SVG banner that can be directly pasted / embedded in GitHub!
   const generateSVGBanner = () => {
-    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 350" width="100%" height="100%">
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 380" width="100%" height="100%">
   <defs>
-    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+    <!-- Soft Aurora Blurs and Linear Gradients -->
+    <filter id="aurora-blur" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="40" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+
+    <linearGradient id="primary-grad" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="${colors.primary}" />
       <stop offset="50%" stop-color="${colors.secondary}" />
       <stop offset="100%" stop-color="${colors.accent}" />
     </linearGradient>
+
+    <linearGradient id="card-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#111827" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#030712" stop-opacity="0.95" />
+    </linearGradient>
+
     <style>
-      @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap');
+      @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&amp;family=JetBrains+Mono:wght@500;700&amp;display=swap');
+      
       .title {
-        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
         font-weight: 800;
-        font-size: 42px;
-        fill: url(#gradient);
-        animation: glow 6s ease-in-out infinite alternate;
+        font-size: 38px;
+        fill: #ffffff;
+        letter-spacing: -1px;
+      }
+      .gradient-text {
+        fill: url(#primary-grad);
+        font-weight: 900;
       }
       .subtitle {
         font-family: 'JetBrains Mono', monospace;
-        font-weight: 500;
-        font-size: 18px;
-        fill: #94a3b8;
+        font-weight: 700;
+        font-size: 16px;
+        fill: #cbd5e1;
       }
       .desc {
-        font-family: 'Plus Jakarta Sans', sans-serif;
-        font-size: 14px;
-        fill: #64748b;
+        font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+        font-size: 13.5px;
+        fill: #94a3b8;
+        line-height: 1.6;
       }
-      .label {
+      .system-badge {
         font-family: 'JetBrains Mono', monospace;
-        font-size: 11px;
+        font-size: 10px;
+        font-weight: 700;
         fill: ${colors.secondary};
         letter-spacing: 2px;
       }
-      @keyframes glow {
-        0% { filter: drop-shadow(0 2px 5px rgba(139, 92, 246, 0.2)); }
-        100% { filter: drop-shadow(0 5px 15px rgba(6, 182, 212, 0.4)); }
+      
+      /* CSS Keyframes for High-Fidelity SVG Animations */
+      @keyframes floating-mesh-1 {
+        0% { transform: translate(0px, 0px) scale(1); }
+        50% { transform: translate(30px, -20px) scale(1.1); }
+        100% { transform: translate(0px, 0px) scale(1); }
       }
-      .animated-dot {
-        animation: blink 1.5s infinite;
+      @keyframes floating-mesh-2 {
+        0% { transform: translate(0px, 0px) scale(1.05); }
+        50% { transform: translate(-40px, 30px) scale(0.9); }
+        100% { transform: translate(0px, 0px) scale(1.05); }
       }
-      @keyframes blink {
+      @keyframes signal-pulse {
+        0%, 100% { opacity: 0.3; r: 3px; }
+        50% { opacity: 0.9; r: 5px; }
+      }
+      @keyframes rotating-structure {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      @keyframes typing-underline {
         0%, 100% { opacity: 0; }
         50% { opacity: 1; }
       }
-      .floating-node {
-        animation: float 6s ease-in-out infinite;
+      @keyframes wave-sway {
+        0% { transform: translateY(0) scaleY(1); }
+        50% { transform: translateY(-5px) scaleY(1.03); }
+        100% { transform: translateY(0) scaleY(1); }
       }
-      @keyframes float {
-        0%, 100% { transform: translateY(0px); }
-        50% { transform: translateY(-10px); }
+
+      .mesh-1 {
+        animation: floating-mesh-1 18s ease-in-out infinite alternate;
+      }
+      .mesh-2 {
+        animation: floating-mesh-2 22s ease-in-out infinite alternate;
+      }
+      .signal-dot {
+        animation: signal-pulse 2s infinite;
+      }
+      .rotating-hologram {
+        animation: rotating-structure 20s linear infinite;
+        transform-origin: 740px 170px;
+      }
+      .cursor-blink {
+        animation: typing-underline 1.2s infinite;
+      }
+      .interactive-wave {
+        animation: wave-sway 8s ease-in-out infinite alternate;
       }
     </style>
   </defs>
 
-  <!-- Deep dark glass container -->
-  <rect width="100%" height="100%" fill="#030712" rx="16" />
-  <rect x="2" y="2" width="796" height="346" rx="14" fill="#090d16" stroke="#1e293b" stroke-width="2" />
+  <!-- Deep dark obsidian container -->
+  <rect width="100%" height="100%" fill="#030712" rx="20" />
+  <rect x="2" y="2" width="916" height="376" rx="18" fill="#070a13" stroke="#111827" stroke-width="1.5" />
 
-  <!-- Code Dots top left -->
-  <circle cx="25" cy="25" r="5" fill="#ef4444" />
-  <circle cx="40" cy="25" r="5" fill="#f59e0b" />
-  <circle cx="55" cy="25" r="5" fill="#22c55e" />
-
-  <!-- Abstract Tech Wave and Grid -->
-  <g opacity="0.15">
-    <path d="M 0 250 C 200 150, 400 350, 800 250 L 800 350 L 0 350 Z" fill="url(#gradient)" />
-    <!-- Dynamic grid lines -->
-    <line x1="100" y1="0" x2="100" y2="350" stroke="#334155" stroke-width="0.5" />
-    <line x1="200" y1="0" x2="200" y2="350" stroke="#334155" stroke-width="0.5" />
-    <line x1="300" y1="0" x2="300" y2="350" stroke="#334155" stroke-width="0.5" />
-    <line x1="400" y1="0" x2="400" y2="350" stroke="#334155" stroke-width="0.5" />
-    <line x1="500" y1="0" x2="500" y2="350" stroke="#334155" stroke-width="0.5" />
-    <line x1="600" y1="0" x2="600" y2="350" stroke="#334155" stroke-width="0.5" />
-    <line x1="700" y1="0" x2="700" y2="350" stroke="#334155" stroke-width="0.5" />
+  <!-- Aurora Mesh Gradient Backdrops (Accelerated SVG blurs) -->
+  <g filter="url(#aurora-blur)" opacity="0.35">
+    <!-- Aurora 1 -->
+    <circle class="mesh-1" cx="150" cy="80" r="130" fill="${colors.primary}" />
+    <!-- Aurora 2 -->
+    <circle class="mesh-2" cx="750" cy="280" r="140" fill="${colors.secondary}" />
+    <!-- Aurora 3 -->
+    <circle class="mesh-1" cx="450" cy="180" r="110" fill="${colors.accent}" />
   </g>
 
-  <!-- Profile Content -->
-  <g transform="translate(60, 60)">
-    <!-- Label -->
-    <text x="0" y="20" class="label" font-weight="bold">_PORTFOLIO_SYSTEM_INITIALIZED</text>
+  <!-- Premium Digital Matrix Grid overlay -->
+  <g opacity="0.04" stroke="#ffffff" stroke-width="1">
+    <pattern id="grid" width="30" height="30" patternUnits="userSpaceOnUse">
+      <path d="M 30 0 L 0 0 0 30" fill="none" />
+    </pattern>
+    <rect width="100%" height="100%" fill="url(#grid)" />
+  </g>
+
+  <!-- Top bar controls (Mac Style Windows UI) -->
+  <g transform="translate(30, 25)" opacity="0.8">
+    <circle cx="0" cy="0" r="5" fill="#ef4444" />
+    <circle cx="15" cy="0" r="5" fill="#eab308" />
+    <circle cx="30" cy="0" r="5" fill="#22c55e" />
+    <text x="50" y="4" font-family="'JetBrains Mono', monospace" font-size="9" fill="#475569" font-weight="700">CORE_MESH_V1.9_STABLE</text>
+  </g>
+
+  <!-- Header Location Coordinates -->
+  <g transform="translate(890, 30)" text-anchor="end" opacity="0.6">
+    <text font-family="'JetBrains Mono', monospace" font-size="9" fill="#64748b" font-weight="700">LOC: ${profile.location.toUpperCase()}</text>
+  </g>
+
+  <!-- ----------------------------------------------------
+      MAIN CONTENT REPRESENTATION
+      ---------------------------------------------------- -->
+  <g transform="translate(60, 75)">
     
-    <!-- Title -->
-    <text x="0" y="70" class="title">Hi, I'm ${profile.name}</text>
-    
-    <!-- Typing Subtitle -->
-    <g transform="translate(0, 110)">
-      <text x="0" y="0" class="subtitle">${profile.role} @ ${profile.company}</text>
-      <!-- Blinking Cursor -->
-      <rect x="360" y="-18" width="8" height="22" fill="${colors.secondary}" class="animated-dot" />
+    <!-- System Status Badge -->
+    <g transform="translate(0, 10)">
+      <rect width="215" height="24" rx="12" fill="#111827" stroke="#1f2937" stroke-width="1" />
+      <circle class="signal-dot" cx="15" cy="12" r="3.5" fill="#22c55e" />
+      <text x="28" y="15" class="system-badge">_ENGINE_STATUS: ACTIVE</text>
     </g>
 
-    <!-- Bio description -->
-    <text x="0" y="150" class="desc">${profile.bio.substring(0, 70)}...</text>
-    <text x="0" y="172" class="desc">Focused on scalable structures, clean code, and premium UX integrations.</text>
+    <!-- Developer Title -->
+    <text x="0" y="65" class="title">
+      Hi, I'm <tspan class="gradient-text">${profile.name}</tspan>
+    </text>
 
-    <!-- Metrics display -->
-    <g transform="translate(0, 210)">
-      <rect width="130" height="45" rx="8" fill="#111827" stroke="#374151" />
-      <text x="15" y="27" font-family="'Plus Jakarta Sans', sans-serif" font-weight="bold" font-size="14" fill="#ffffff">${profile.stats.followers.toLocaleString()}</text>
-      <text x="15" y="38" font-family="'JetBrains Mono', monospace" font-size="8" fill="#94a3b8">FOLLOWERS</text>
-
-      <g transform="translate(145, 0)">
-        <rect width="130" height="45" rx="8" fill="#111827" stroke="#374151" />
-        <text x="15" y="27" font-family="'Plus Jakarta Sans', sans-serif" font-weight="bold" font-size="14" fill="#ffffff">${profile.stats.stars.toLocaleString()}</text>
-        <text x="15" y="38" font-family="'JetBrains Mono', monospace" font-size="8" fill="#94a3b8">GITHUB STARS</text>
-      </g>
-
-      <g transform="translate(290, 0)">
-        <rect width="130" height="45" rx="8" fill="#111827" stroke="#374151" />
-        <text x="15" y="27" font-family="'Plus Jakarta Sans', sans-serif" font-weight="bold" font-size="14" fill="#ffffff">${profile.stats.repos}</text>
-        <text x="15" y="38" font-family="'JetBrains Mono', monospace" font-size="8" fill="#94a3b8">REPOSITORIES</text>
-      </g>
+    <!-- Subtitle (Role and Affiliation) -->
+    <g transform="translate(0, 100)">
+      <text x="0" y="0" class="subtitle">&gt; ${profile.role} @ ${profile.company}</text>
+      <rect class="cursor-blink" x="420" y="-14" width="8" height="18" fill="${colors.secondary}" />
     </g>
+
+    <!-- Bio Summary Block -->
+    <g transform="translate(0, 135)">
+      <text x="0" y="0" class="desc">${profile.bio.substring(0, 78)}...</text>
+      <text x="0" y="18" class="desc">Engineering fluid digital constructs with meticulous micro-interactions.</text>
+    </g>
+
+    <!-- Live Performance Indicators Metrics Cards -->
+    <g transform="translate(0, 195)">
+      
+      <!-- Card 1: Followers -->
+      <g transform="translate(0, 0)">
+        <rect width="135" height="48" rx="10" fill="url(#card-grad)" stroke="#1f2937" stroke-width="1" />
+        <!-- Vector Icon -->
+        <circle cx="24" cy="24" r="5" fill="${colors.primary}" opacity="0.8" />
+        <path d="M 18,32 C 18,28 20,27 24,27 C 28,27 30,28 30,32" stroke="${colors.primary}" stroke-width="1.5" fill="none" />
+        <text x="44" y="22" font-family="'Plus Jakarta Sans', sans-serif" font-weight="800" font-size="14" fill="#ffffff">${profile.stats.followers.toLocaleString()}</text>
+        <text x="44" y="34" font-family="'JetBrains Mono', monospace" font-size="8" fill="#64748b" font-weight="700">FOLLOWERS</text>
+      </g>
+
+      <!-- Card 2: Stars -->
+      <g transform="translate(150, 0)">
+        <rect width="135" height="48" rx="10" fill="url(#card-grad)" stroke="#1f2937" stroke-width="1" />
+        <!-- Star Vector -->
+        <polygon points="24,14 27,20 34,21 29,26 30,32 24,29 18,32 19,26 14,21 21,20" fill="#eab308" opacity="0.8" />
+        <text x="44" y="22" font-family="'Plus Jakarta Sans', sans-serif" font-weight="800" font-size="14" fill="#ffffff">${profile.stats.stars.toLocaleString()}</text>
+        <text x="44" y="34" font-family="'JetBrains Mono', monospace" font-size="8" fill="#64748b" font-weight="700">STARS</text>
+      </g>
+
+      <!-- Card 3: Repos -->
+      <g transform="translate(300, 0)">
+        <rect width="135" height="48" rx="10" fill="url(#card-grad)" stroke="#1f2937" stroke-width="1" />
+        <!-- Repo fork icon vector -->
+        <circle cx="22" cy="18" r="3" fill="none" stroke="${colors.accent}" stroke-width="1.5" />
+        <circle cx="18" cy="30" r="3" fill="none" stroke="${colors.accent}" stroke-width="1.5" />
+        <circle cx="28" cy="30" r="3" fill="none" stroke="${colors.accent}" stroke-width="1.5" />
+        <path d="M 22,21 L 22,24 L 18,27 M 22,24 L 28,27" stroke="${colors.accent}" stroke-width="1.5" fill="none" />
+        <text x="44" y="22" font-family="'Plus Jakarta Sans', sans-serif" font-weight="800" font-size="14" fill="#ffffff">${profile.stats.repos}</text>
+        <text x="44" y="34" font-family="'JetBrains Mono', monospace" font-size="8" fill="#64748b" font-weight="700">REPOSITORIES</text>
+      </g>
+
+    </g>
+
   </g>
 
-  <!-- Interactive Globe / Tech Logo visual floating on the right -->
-  <g class="floating-node" transform="translate(560, 140)">
-    <circle cx="80" cy="80" r="70" fill="url(#circle-glow)" opacity="0.3" />
-    <circle cx="80" cy="80" r="50" stroke="${colors.primary}" stroke-width="2" fill="none" stroke-dasharray="10, 5" />
-    <circle cx="80" cy="80" r="30" stroke="${colors.secondary}" stroke-width="1.5" fill="none" />
-    <polygon points="80,50 100,90 60,90" stroke="${colors.accent}" stroke-width="2" fill="none" />
-    <!-- Pulse elements -->
-    <circle cx="80" cy="50" r="4" fill="${colors.accent}" />
-    <circle cx="100" cy="90" r="4" fill="${colors.accent}" />
-    <circle cx="60" cy="90" r="4" fill="${colors.accent}" />
+  <!-- ----------------------------------------------------
+      RIGHT PORTAL: PREMIUM HOLOGRAM VISUAL (Stripe/Linear Theme)
+      ---------------------------------------------------- -->
+  <g class="rotating-hologram" transform="translate(0, 0)">
+    <!-- Main Outer Halo -->
+    <ellipse cx="740" cy="170" rx="75" ry="75" fill="none" stroke="url(#primary-grad)" stroke-width="1" stroke-dasharray="8,6" opacity="0.3" />
+    <ellipse cx="740" cy="170" rx="55" ry="55" fill="none" stroke="${colors.secondary}" stroke-width="1.5" stroke-dasharray="14,8" opacity="0.5" />
+    
+    <!-- Concentric Inner Rings -->
+    <circle cx="740" cy="170" r="35" fill="none" stroke="${colors.accent}" stroke-width="1" opacity="0.4" />
+    <circle cx="740" cy="170" r="18" fill="none" stroke="#ffffff" stroke-width="1.5" opacity="0.2" />
+
+    <!-- Core Floating Star/Emitter -->
+    <g transform="translate(740, 170)">
+      <polygon points="0,-12 3,-3 12,0 3,3 0,12 -3,3 -12,0 -3,-3" fill="#ffffff" opacity="0.9" />
+      <circle cx="0" cy="0" r="3" fill="${colors.secondary}" />
+    </g>
+    
+    <!-- Orbiting Nodes -->
+    <circle cx="685" cy="170" r="4" fill="${colors.primary}" />
+    <circle cx="795" cy="170" r="4" fill="${colors.secondary}" />
+    <circle cx="740" cy="115" r="3" fill="${colors.accent}" />
+    <circle cx="740" cy="225" r="5" fill="#ffffff" />
   </g>
 
-  <radialGradient id="circle-glow" cx="50%" cy="50%" r="50%">
-    <stop offset="0%" stop-color="${colors.primary}" stop-opacity="0.8" />
-    <stop offset="100%" stop-color="${colors.primary}" stop-opacity="0" />
-  </radialGradient>
+  <!-- Overlapping Wave Footer (Vercel-style transition) -->
+  <path class="interactive-wave" d="M 0,355 C 180,340 360,370 540,355 C 720,340 900,365 1080,355 L 1080,380 L 0,380 Z" fill="#070a13" opacity="0.8" />
+  <path class="interactive-wave" d="M 0,362 C 220,350 440,372 660,360 C 880,348 1100,368 1320,360 L 1320,380 L 0,380 Z" fill="#090d16" />
+
 </svg>`;
   };
 
