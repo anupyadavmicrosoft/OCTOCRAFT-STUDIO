@@ -1,0 +1,8 @@
+{
+  "name": "GitHub Profile README & Interactive Portfolio",
+  "description": "An ultra-premium, interactive portfolio and GitHub Profile README visualizer featuring dynamic SVG banners, live statistics, skill visualizations, and high-fidelity markdown exporters designed for top-tier software engineers.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
