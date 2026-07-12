@@ -1,0 +1,96 @@
+name: Sync Blog Posts, YouTube, and Repositories
+
+on:
+  schedule:
+    # Runs every 12 hours
+    - cron: '0 */12 * * *'
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  update-readme:
+    name: Auto-update profile README lists
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      # Pull RSS Medium Blogs
+      - name: Fetch Medium Blog Posts
+        uses: gautamkrishnar/blog-post-workflow@v1
+        with:
+          comment_tag_name: "MEDIUM-BLOGS"
+          feed_list: "https://medium.com/feed/@anupyadav"
+          max_post_count: 5
+          template: '<li><a href="$url" target="_blank" rel="noopener noreferrer"><strong>$title</strong></a> — <em>$published</em></li>'
+
+      # Pull RSS Dev.to Blogs
+      - name: Fetch Dev.to Blog Posts
+        uses: gautamkrishnar/blog-post-workflow@v1
+        with:
+          comment_tag_name: "DEVTO-BLOGS"
+          feed_list: "https://dev.to/feed/anupyadav"
+          max_post_count: 5
+          template: '<li><a href="$url" target="_blank" rel="noopener noreferrer"><strong>$title</strong></a> — <em>$published</em></li>'
+
+      # Pull YouTube RSS Feed
+      - name: Fetch YouTube Uploads
+        uses: gautamkrishnar/blog-post-workflow@v1
+        with:
+          comment_tag_name: "YOUTUBE-VIDEOS"
+          feed_list: "https://www.youtube.com/feeds/videos.xml?channel_id=UCYourChannelID"
+          max_post_count: 5
+          template: '<li><a href="$url" target="_blank" rel="noopener noreferrer">🎥 <strong>$title</strong></a></li>'
+
+      # Dynamic repo sync via custom Node script
+      - name: Fetch and Update Recent GitHub Repositories
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            const username = context.repo.owner;
+            
+            try {
+              const response = await github.rest.repos.listForUser({
+                username: username,
+                sort: 'updated',
+                per_page: 5,
+                type: 'owner'
+              });
+              
+              const repos = response.data.filter(r => !r.fork && r.name !== username);
+              let content = '<ul>\n';
+              for (const repo of repos) {
+                const lang = repo.language ? ` [${repo.language}]` : '';
+                const desc = repo.description ? ` - *${repo.description}*` : '';
+                content += `  <li><a href="${repo.html_url}" target="_blank"><strong>${repo.name}</strong></a>${lang} (★ ${repo.stargazers_count})${desc}</li>\n`;
+              }
+              content += '</ul>';
+              
+              let readme = fs.readFileSync('README.md', 'utf8');
+              const regex = /(<!-- REPOSITORIES:START -->)[\s\S]*?(<!-- REPOSITORIES:END -->)/g;
+              
+              if (regex.test(readme)) {
+                readme = readme.replace(regex, `$1\n${content}\n$2`);
+                fs.writeFileSync('README.md', readme);
+                console.log('Successfully updated repositories list inside README.md!');
+              } else {
+                console.log('Marker tags <!-- REPOSITORIES:START/END --> not found in README.md, skipping write.');
+              }
+            } catch (err) {
+              console.error('Error fetching repositories: ', err);
+            }
+
+      # Commit and push changes back
+      - name: Commit and Push Changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          git diff --quiet && git diff --staged --quiet || git commit -m "chore: auto-update RSS feeds and repository stats [skip ci]"
+          git push origin main || echo "No changes to commit or push."

@@ -23,6 +23,8 @@ import Controls from './components/Controls';
 import MarkdownView from './components/MarkdownView';
 import PremiumEffects from './components/PremiumEffects';
 import Footer from './components/Footer';
+import DeveloperCorner from './components/DeveloperCorner';
+import GithubActionsHub from './components/GithubActionsHub';
 
 const DEFAULT_PROFILE: UserProfile = {
   name: 'Anup Yadav',
@@ -160,7 +162,7 @@ const DEFAULT_PROFILE: UserProfile = {
 
 export default function App() {
   const [profile, setProfile] = useState<UserProfile>(DEFAULT_PROFILE);
-  const [activeTab, setActiveTab] = useState<'profile' | 'exporter'>('profile');
+  const [activeTab, setActiveTab] = useState<'profile' | 'exporter' | 'automations'>('profile');
 
   // Change handlers
   const handleProfileChange = (updated: UserProfile) => {
@@ -236,20 +238,27 @@ export default function App() {
         <div className="lg:col-span-7 space-y-8">
           
           {/* Navigation Tab selection */}
-          <div className="flex border-b border-slate-800">
+          <div className="flex border-b border-slate-800 overflow-x-auto no-scrollbar">
             <button
               onClick={() => setActiveTab('profile')}
-              className={`flex items-center space-x-2 px-6 py-3 border-b-2 font-medium text-sm transition-all ${activeTab === 'profile' ? 'border-cyan-400 text-white' : 'border-transparent text-slate-400 hover:text-slate-200'}`}
+              className={`flex items-center space-x-2 px-6 py-3 border-b-2 font-medium text-sm transition-all whitespace-nowrap shrink-0 ${activeTab === 'profile' ? 'border-cyan-400 text-white' : 'border-transparent text-slate-400 hover:text-slate-200'}`}
             >
               <Eye size={16} />
               <span>Interactive Live Preview</span>
             </button>
             <button
               onClick={() => setActiveTab('exporter')}
-              className={`flex items-center space-x-2 px-6 py-3 border-b-2 font-medium text-sm transition-all ${activeTab === 'exporter' ? 'border-purple-400 text-white' : 'border-transparent text-slate-400 hover:text-slate-200'}`}
+              className={`flex items-center space-x-2 px-6 py-3 border-b-2 font-medium text-sm transition-all whitespace-nowrap shrink-0 ${activeTab === 'exporter' ? 'border-purple-400 text-white' : 'border-transparent text-slate-400 hover:text-slate-200'}`}
             >
               <Code size={16} />
               <span>GitHub Exporter & Markdown</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('automations')}
+              className={`flex items-center space-x-2 px-6 py-3 border-b-2 font-medium text-sm transition-all whitespace-nowrap shrink-0 ${activeTab === 'automations' ? 'border-emerald-400 text-white' : 'border-transparent text-slate-400 hover:text-slate-200'}`}
+            >
+              <Workflow size={16} className={activeTab === 'automations' ? 'text-emerald-400' : 'text-slate-400'} />
+              <span>GitHub Automations (CI/CD)</span>
             </button>
           </div>
 
@@ -274,11 +283,12 @@ export default function App() {
 
                 <HeroPreview profile={profile} />
                 <AboutMeSection profile={profile} />
+                <DeveloperCorner profile={profile} />
                 <FeaturedProjectsSection profile={profile} />
                 <GithubAnalyticsSection profile={profile} />
                 <TechStackSection profile={profile} />
               </motion.div>
-            ) : (
+            ) : activeTab === 'exporter' ? (
               <motion.div
                 key="exporter-tab"
                 initial={{ opacity: 0, y: 15 }}
@@ -287,6 +297,16 @@ export default function App() {
                 transition={{ duration: 0.3 }}
               >
                 <MarkdownView profile={profile} />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="automations-tab"
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -15 }}
+                transition={{ duration: 0.3 }}
+              >
+                <GithubActionsHub profile={profile} />
               </motion.div>
             )}
           </AnimatePresence>
